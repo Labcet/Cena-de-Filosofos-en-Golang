@@ -10,10 +10,11 @@ type filosofo struct {
 	nombre      string
 	cubierto chan bool
 	vecino  *filosofo
+	comida int
 }
 
 func hacerfilosofo(nombre string, vecino *filosofo) *filosofo {
-	filo := &filosofo{nombre, make(chan bool, 1), vecino}
+	filo := &filosofo{nombre, make(chan bool, 1), vecino, 1}
 	filo.cubierto <- true
 	return filo
 }
@@ -24,7 +25,7 @@ func (filo *filosofo) pensar() {
 }
 
 func (filo *filosofo) comer() {
-	fmt.Printf("%v esta comiendo.\n", filo.nombre)
+	fmt.Printf("%v esta comiendo su [%v] comida.\n", filo.nombre, filo.comida)
 	time.Sleep(time.Duration(rand.Int63n(1e9)))
 }
 
@@ -48,6 +49,7 @@ func (filo *filosofo) obtenerCubiertos() {
 func (filo *filosofo) retornarCubiertos() {
 	filo.cubierto <- true
 	filo.vecino.cubierto <- true
+	filo.comida++
 }
 
 func (filo *filosofo) cenar(anuncia chan *filosofo) {
